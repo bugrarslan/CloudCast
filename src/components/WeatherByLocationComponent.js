@@ -79,7 +79,7 @@ import {Image,SafeAreaView,Text,View,} from "react-native";
       fetchMyWeatherData();
     }, [long]);
   
-    // const { current, location } = weather;
+    const { current, location } = weather;
   
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -111,7 +111,7 @@ import {Image,SafeAreaView,Text,View,} from "react-native";
                 {/*weather image*/}
                 <View style={{ flexDirection: "row", justifyContent: "center" }}>
                   <Image
-                    source={weatherImages[weather?.current?.condition?.text]}
+                    source={{uri: "https:" + current?.condition?.icon}}
                     style={{ width: windowWidth / 2, aspectRatio: 1 }}
                   />
                 </View>

@@ -1,4 +1,5 @@
-import axios from 'react-native-axios'
+import axios from 'react-native-axios';
+import { api_key } from '../api_key/api_key';
 
 const searchApiCall = async (city) => {
   const options = {
@@ -6,7 +7,7 @@ const searchApiCall = async (city) => {
     url: 'https://weatherapi-com.p.rapidapi.com/search.json',
     params: {q: city},
     headers: {
-      'X-RapidAPI-Key': 'f32ca9fcd0msh358530d5af88277p1eec5ejsn0e55f57eef2c',
+      'X-RapidAPI-Key': api_key,
       'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
     }
   }
@@ -28,7 +29,7 @@ const forecastApiCall = async (city) => {
       days:'3'
     },
     headers: {
-      'X-RapidAPI-Key': 'f32ca9fcd0msh358530d5af88277p1eec5ejsn0e55f57eef2c',
+      'X-RapidAPI-Key': api_key,
       'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
     }
   }
