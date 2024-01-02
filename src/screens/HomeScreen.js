@@ -9,7 +9,7 @@ import WeatherByLocationComponent from "../components/WeatherByLocationComponent
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-const HomeScreen = (props) => {
+const HomeScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -17,8 +17,8 @@ const HomeScreen = (props) => {
       <ImageBackground
         blurRadius={70} source={require("../assets/images/bg.png")}
         style={{ width: windowWidth, height: windowHeight }}>
-        <Swiper>
-          <WeatherBySearchComponent/>
+        <Swiper loop={false}>
+          <WeatherBySearchComponent navigation={navigation}/>
           <WeatherByLocationComponent/>
         </Swiper>
       </ImageBackground>
