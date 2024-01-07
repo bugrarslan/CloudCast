@@ -42,6 +42,8 @@ const forecastApiCall = async (city) => {
   }
 }
 
+
+
 export const fetchWeatherForecast = params=> {
   return forecastApiCall(params.city)
 }

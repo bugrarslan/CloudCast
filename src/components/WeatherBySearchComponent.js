@@ -19,6 +19,7 @@ import {fetchWeatherForecast} from '../api/weather';
 import {weatherImages} from '../constants/index';
 import * as Progress from 'react-native-progress';
 import {storeData, getData} from '../utils/AsyncStorage';
+import { useFocusEffect } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -28,48 +29,44 @@ const WeatherBySearchComponent = ({navigation}) => {
   const [locations, setLocations] = useState([]);
   const [weather, setWeather] = useState({});
   const [loading, setLoading] = useState(true);
-
-  const handleLocation = async loc => {
-    // console.log("location: ", loc);
-    setLocations([]);
-    toggleSearch(false);
-    setLoading(true);
-    fetchWeatherForecast({
-      city: loc.name,
-    }).then(data => {
-      setWeather(data);
-      setLoading(false);
-      storeData('city', loc.name);
-    });
-  };
-
-  const handleSearch = value => {
-    fetchLocations({city: value}).then(data => {
-      if (value.length > 2) {
-        setLocations(data);
-      }
-    });
-  };
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
+    // Buraya A sayfasının her render edildiğinde yapılması istenen işlemleri ekleyebilirsiniz.
+    // Örneğin, verilerin yeniden getirilmesi, durum sıfırlama, vb.
+    console.log('A Screen rendered');
     fetchMyWeatherData();
-  }, []);
+
+    return () => {
+      // Eğer bir temizleme işlemi yapmanız gerekirse, buraya ekleyebilirsiniz.
+    };
+  }, []); // Bu boş bağımlılık dizisi sayfanın sadece bir kez render edilmesini sağlar.
+
+  useFocusEffect(() => {
+    // Sayfa odaklandığında yapılacak işlemleri buraya ekleyebilirsiniz.
+    // Örneğin, her seferinde verileri getirme işlemi yapabilirsiniz.
+    if (count > 0) {
+      console.log('A Screen focused');
+      fetchMyWeatherData();
+      setCount(0);
+    }
+    
+    return () => {
+      // Eğer bir temizleme işlemi yapmanız gerekirse, buraya ekleyebilirsiniz.
+    };
+  });
 
   const fetchMyWeatherData = async () => {
-    let myCity = await getData('city');
-    let defaultCity = 'Istanbul';
-    if (!myCity) myCity = defaultCity;
-    fetchWeatherForecast({
-      city: myCity,
-    }).then(data => {
-      setWeather(data);
-      setLoading(false);
-    });
+      let myCity = await getData('city');
+      let defaultCity = 'Istanbul';
+      if (!myCity) myCity = defaultCity;
+      fetchWeatherForecast({
+        city: myCity,
+      }).then(data => {
+        setWeather(data);
+        setLoading(false);
+      });
   };
-
-  const handleTextDebounce = useCallback(debounce(handleSearch, 1200), []);
-
-  // const { current, location } = weather ? weather : null;
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -78,37 +75,26 @@ const WeatherBySearchComponent = ({navigation}) => {
           <Progress.CircleSnail thickness={5} size={50} color={'#0bb3b2'} />
         </View>
       ) : (
-        <View style={{flex:1}}>
+        <View style={{flex: 1}}>
           {/* forecast section */}
           <View
             style={{
               justifyContent: 'space-evenly',
               paddingHorizontal: 10,
-              flex: 1,
-              backgroundColor:'red'
+              flex: 1
             }}>
             {/*Location*/}
             <View style={{height: windowHeight / 17}}>
               <View
                 style={{
-                  backgroundColor: showSearch
-                    ? 'rgba(255,255,255,0.2)'
-                    : 'transparent',
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
                   borderRadius: 50,
+                  width: 50,
                 }}>
-                {showSearch ? (
-                  <TextInput
-                    onChangeText={handleTextDebounce}
-                    placeholder="Search city"
-                    placeholderTextColor={'lightgray'}
-                    style={{paddingLeft: windowWidth / 20, flex: 1}}
-                  />
-                ) : null}
                 <TouchableOpacity
-                  onPress={() => toggleSearch(!showSearch)}
+                  onPress={() => {
+                    setCount(1);
+                    navigation.navigate('Search');
+                  }}
                   style={{
                     backgroundColor: 'rgba(255,255,255,0.3)',
                     borderRadius: 20,
@@ -118,46 +104,6 @@ const WeatherBySearchComponent = ({navigation}) => {
                   <MagnifyingGlassIcon size="22" color="white" />
                 </TouchableOpacity>
               </View>
-              {locations.length > 0 && showSearch ? (
-                <View
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#E0E0E0',
-                    top: 60,
-                    borderRadius: 30,
-                    position: 'absolute',
-                  }}>
-                  {locations.map((loc, index) => {
-                    return (
-                      <TouchableOpacity
-                        key={index}
-                        onPress={() => handleLocation(loc)}
-                        style={[
-                          {
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            padding: 10,
-                            paddingLeft: 15,
-                            borderColor: '#BDBDBD',
-                          },
-                          index + 1 !== locations.length && {
-                            borderBottomWidth: 2,
-                          },
-                        ]}>
-                        <MapPinIcon size={20} color={'gray'} />
-                        <Text
-                          style={{
-                            color: 'black',
-                            fontSize: 20,
-                            marginLeft: '2%',
-                          }}>
-                          {loc?.name}, {loc?.country}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              ) : null}
             </View>
 
             <View style={{}}>
@@ -182,7 +128,7 @@ const WeatherBySearchComponent = ({navigation}) => {
               <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                 <Image
                   source={{uri: 'https:' + weather?.current?.condition?.icon}}
-                  style={{width: windowWidth / 2, aspectRatio: 1, }}
+                  style={{width: windowWidth / 2, aspectRatio: 1}}
                 />
               </View>
               {/*degree celcius*/}
@@ -303,7 +249,13 @@ const WeatherBySearchComponent = ({navigation}) => {
               })}
             </View>
           </View>
-          <TouchableOpacity onPress={()=> navigation.navigate('Web', {loc:weather?.location?.name})} style={{justifyContent:'center', alignItems:'center'}}><Text style={{fontSize:20}}>View More Details...</Text></TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('Web', {loc: weather?.location?.name})
+            }
+            style={{justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={{fontSize: 20}}>View More Details...</Text>
+          </TouchableOpacity>
         </View>
       )}
     </SafeAreaView>
