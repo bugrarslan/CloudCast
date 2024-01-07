@@ -1,25 +1,18 @@
 import {
   Image,
-  ImageBackground,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Dimensions} from 'react-native';
 import {MagnifyingGlassIcon} from 'react-native-heroicons/outline';
-import {CalendarDaysIcon, MapPinIcon} from 'react-native-heroicons/solid';
-import {debounce} from 'lodash';
-import {fetchLocations} from '../api/weather';
+import {CalendarDaysIcon} from 'react-native-heroicons/solid';
 import {fetchWeatherForecast} from '../api/weather';
-import {weatherImages} from '../constants/index';
 import * as Progress from 'react-native-progress';
-import {storeData, getData} from '../utils/AsyncStorage';
-import { useFocusEffect } from '@react-navigation/native';
+import {getData} from '../utils/AsyncStorage';
+import {useFocusEffect} from '@react-navigation/native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -50,22 +43,22 @@ const WeatherBySearchComponent = ({navigation}) => {
       fetchMyWeatherData();
       setCount(0);
     }
-    
+
     return () => {
       // Eğer bir temizleme işlemi yapmanız gerekirse, buraya ekleyebilirsiniz.
     };
   });
 
   const fetchMyWeatherData = async () => {
-      let myCity = await getData('city');
-      let defaultCity = 'Istanbul';
-      if (!myCity) myCity = defaultCity;
-      fetchWeatherForecast({
-        city: myCity,
-      }).then(data => {
-        setWeather(data);
-        setLoading(false);
-      });
+    let myCity = await getData('city');
+    let defaultCity = 'Istanbul';
+    if (!myCity) myCity = defaultCity;
+    fetchWeatherForecast({
+      city: myCity,
+    }).then(data => {
+      setWeather(data);
+      setLoading(false);
+    });
   };
 
   return (
@@ -81,10 +74,10 @@ const WeatherBySearchComponent = ({navigation}) => {
             style={{
               justifyContent: 'space-evenly',
               paddingHorizontal: 10,
-              flex: 1
+              flex: 1,
             }}>
             {/*Location*/}
-            <View style={{height: windowHeight / 17}}>
+            <View style={{height: windowHeight / 17, width: 50}}>
               <View
                 style={{
                   borderRadius: 50,
@@ -106,92 +99,95 @@ const WeatherBySearchComponent = ({navigation}) => {
               </View>
             </View>
 
-            <View style={{}}>
+            <Text
+              style={{
+                color: 'white',
+                textAlign: 'center',
+                fontSize: 25,
+                fontWeight: 'bold',
+              }}>
+              {weather?.location?.name},
               <Text
                 style={{
-                  color: 'white',
-                  textAlign: 'center',
-                  fontSize: 25,
-                  fontWeight: 'bold',
+                  fontWeight: 'semibold',
+                  color: '#E0E0E0',
+                  fontSize: 20,
                 }}>
-                {weather?.location?.name},
-                <Text
-                  style={{
-                    fontWeight: 'semibold',
-                    color: '#E0E0E0',
-                    fontSize: 20,
-                  }}>
-                  {' ' + weather?.location?.country}
-                </Text>
+                {' ' + weather?.location?.country}
               </Text>
-              {/*weather image*/}
-              <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                <Image
-                  source={{uri: 'https:' + weather?.current?.condition?.icon}}
-                  style={{width: windowWidth / 2, aspectRatio: 1}}
-                />
-              </View>
-              {/*degree celcius*/}
-              <View style={{marginVertical: windowWidth / 30}}>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    color: 'white',
-                    fontSize: 60,
-                  }}>
-                  {weather?.current?.temp_c}&#176;
-                </Text>
-                <Text style={{textAlign: 'center', color: 'white'}}>
-                  {weather?.current?.condition?.text}
-                </Text>
-              </View>
-              {/*other stats*/}
-              <View
+            </Text>
+            {/*weather image*/}
+            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+              <Image
+                source={{uri: 'https:' + weather?.current?.condition?.icon}}
+                style={{width: windowWidth / 2, aspectRatio: 1}}
+              />
+            </View>
+            {/*degree celcius*/}
+            <View style={{marginVertical: windowWidth / 30}}>
+              <Text
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginHorizontal: '4%',
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  color: 'white',
+                  fontSize: 60,
                 }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Image
-                    style={{
-                      width: windowWidth / 20,
-                      aspectRatio: 1,
-                      marginHorizontal: 6,
-                    }}
-                    source={require('../assets/icons/wind.png')}
-                  />
-                  <Text style={{color: 'white', fontWeight: 'semibold'}}>
-                    {weather?.current?.wind_kph}km
-                  </Text>
-                </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Image
-                    style={{
-                      width: windowWidth / 20,
-                      aspectRatio: 1,
-                      marginHorizontal: 6,
-                    }}
-                    source={require('../assets/icons/drop.png')}
-                  />
-                  <Text style={{color: 'white', fontWeight: 'semibold'}}>
-                    {weather?.current?.humidity}%
-                  </Text>
-                </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Image
-                    style={{
-                      width: windowWidth / 20,
-                      aspectRatio: 1,
-                      marginHorizontal: 6,
-                    }}
-                    source={require('../assets/icons/sun.png')}
-                  />
-                  <Text style={{color: 'white', fontWeight: 'semibold'}}>
-                    {weather?.forecast?.forecastday[0]?.astro?.sunrise}
-                  </Text>
-                </View>
+                {weather?.current?.temp_c}&#176;
+              </Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: 'white',
+                  fontWeight: '700',
+                  fontSize: 20,
+                }}>
+                {weather?.current?.condition?.text}
+              </Text>
+            </View>
+            {/*other stats*/}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Image
+                  style={{
+                    width: windowWidth / 20,
+                    aspectRatio: 1,
+                    marginHorizontal: 6,
+                  }}
+                  source={require('../assets/icons/wind.png')}
+                />
+                <Text style={{color: 'white', fontWeight: 'semibold'}}>
+                  {weather?.current?.wind_kph}km
+                </Text>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Image
+                  style={{
+                    width: windowWidth / 20,
+                    aspectRatio: 1,
+                    marginHorizontal: 6,
+                  }}
+                  source={require('../assets/icons/drop.png')}
+                />
+                <Text style={{color: 'white', fontWeight: 'semibold'}}>
+                  {weather?.current?.humidity}%
+                </Text>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Image
+                  style={{
+                    width: windowWidth / 20,
+                    aspectRatio: 1,
+                    marginHorizontal: 6,
+                  }}
+                  source={require('../assets/icons/sun.png')}
+                />
+                <Text style={{color: 'white', fontWeight: 'semibold'}}>
+                  {weather?.forecast?.forecastday[0]?.astro?.sunrise}
+                </Text>
               </View>
             </View>
           </View>
@@ -202,10 +198,8 @@ const WeatherBySearchComponent = ({navigation}) => {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginVertical: windowHeight / 40,
-                marginHorizontal: windowWidth / 20,
               }}>
-              <CalendarDaysIcon size={22} color={'white'} />
+              <CalendarDaysIcon size={25} color={'white'} />
               <Text style={{color: 'white', marginHorizontal: '3%'}}>
                 Next Three Days Forecast
               </Text>
@@ -248,14 +242,16 @@ const WeatherBySearchComponent = ({navigation}) => {
                 );
               })}
             </View>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('Web', {loc: weather?.location?.name})
+              }
+              style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{fontSize: 20, padding: 10}}>
+                View More Details...
+              </Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('Web', {loc: weather?.location?.name})
-            }
-            style={{justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{fontSize: 20}}>View More Details...</Text>
-          </TouchableOpacity>
         </View>
       )}
     </SafeAreaView>

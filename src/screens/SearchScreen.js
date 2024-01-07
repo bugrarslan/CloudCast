@@ -10,8 +10,8 @@ import React, {useState, useCallback} from 'react';
 import {Dimensions} from 'react-native';
 import {debounce} from 'lodash';
 import {fetchLocations, fetchWeatherForecast} from '../api/weather';
-import {CalendarDaysIcon, MapPinIcon} from 'react-native-heroicons/solid';
-import {storeData, getData} from '../utils/AsyncStorage';
+import {MapPinIcon} from 'react-native-heroicons/solid';
+import {storeData} from '../utils/AsyncStorage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;

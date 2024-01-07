@@ -1,7 +1,6 @@
 import { ImageBackground, SafeAreaView, StatusBar, PermissionsAndroid } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { Dimensions } from "react-native";
-import { storeData, getData } from "../utils/AsyncStorage";
 import Swiper from 'react-native-swiper'
 import WeatherBySearchComponent from "../components/WeatherBySearchComponent";
 import WeatherByLocationComponent from "../components/WeatherByLocationComponent";
@@ -19,7 +18,7 @@ const HomeScreen = ({navigation}) => {
         style={{ width: windowWidth, height: windowHeight }}>
         <Swiper loop={false}>
           <WeatherBySearchComponent navigation={navigation}/>
-          <WeatherByLocationComponent/>
+          <WeatherByLocationComponent navigation={navigation}/>
         </Swiper>
       </ImageBackground>
     </SafeAreaView>
